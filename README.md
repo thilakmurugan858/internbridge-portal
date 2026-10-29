@@ -118,19 +118,5 @@ Complete technical architecture and research documentation is available in the `
 
 ---
 
-## 📦 Publishing to GitHub
-
-To push this local repository to your remote GitHub account:
-1. Create a new empty repository on [GitHub](https://github.com/new) (e.g. `internbridge-portal`).
-2. Add the remote and push:
-```bash
-git remote add origin https://github.com/<your-username>/internbridge-portal.git
-git branch -M main
-git push -u origin main
-```
-*Note: `.env`, `node_modules/`, and `.next/` are excluded by `.gitignore` to prevent secret leakage.*
-
----
-
 ## 📄 License
 This project is an educational and portfolio system design project developed for demonstration purposes.
