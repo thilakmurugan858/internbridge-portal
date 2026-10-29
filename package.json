@@ -1,0 +1,27 @@
+{
+  "name": "internbridge-monorepo",
+  "version": "1.0.0",
+  "description": "InternBridge - Full-stack Internship and Job Recruitment Platform",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "test:backend": "npm test --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "lint:frontend": "npm run lint --prefix frontend"
+  },
+  "keywords": [
+    "internship",
+    "jobs",
+    "recruitment",
+    "nextjs",
+    "express",
+    "typescript",
+    "mongodb"
+  ],
+  "author": "InternBridge Team",
+  "license": "ISC"
+}
