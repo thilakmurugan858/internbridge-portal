@@ -27,13 +27,14 @@ export const createApp = () => {
     helmet({
       contentSecurityPolicy: false, // Allows cross-origin API integration
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginOpenerPolicy: false,
     })
   );
 
   // CORS Configuration
   app.use(
     cors({
-      origin: [config.clientUrl, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+      origin: true, // Dynamically allow request origin in dev
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

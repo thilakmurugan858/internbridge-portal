@@ -25,7 +25,7 @@ const startServer = async () => {
     }
   }
 
-  const server = app.listen(config.port, () => {
+  const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`🚀 [InternBridge Backend API] Server running on http://localhost:${config.port}`);
     console.log(`📋 Health check: http://localhost:${config.port}/api/health`);
     console.log(`⚡ Environment: ${config.nodeEnv}`);
