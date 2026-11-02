@@ -9,7 +9,7 @@ class ApiClient {
   async request<T = any>(
     endpoint: string,
     options: RequestInit = {}
-  ): Promise<{ success: boolean; data?: T; message?: string; meta?: any }> {
+  ): Promise<{ success: boolean; data?: T; message?: string; meta?: any; pagination?: any }> {
     const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     const token = this.getToken();
 
@@ -240,6 +240,188 @@ class ApiClient {
     return this.request('/admin/verify-company', {
       method: 'PATCH',
       body: JSON.stringify({ companyId, verified }),
+    });
+  }
+
+  // ==========================================
+  // Public Space (Community Engagement) APIs
+  // ==========================================
+  async getPostingAllowance() {
+    return this.request('/public-space/allowance');
+  }
+
+  async getCommunityFeed(params: Record<string, any> = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') query.append(k, String(v));
+    });
+    return this.request(`/public-space/feed?${query.toString()}`);
+  }
+
+  async getPostById(id: string) {
+    return this.request(`/public-space/posts/${id}`);
+  }
+
+  async createPost(data: { content: string; mediaUrls?: string[]; mediaType?: string; privacy?: string }) {
+    return this.request('/public-space/posts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePost(id: string, data: { content?: string; privacy?: string }) {
+    return this.request(`/public-space/posts/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePost(id: string) {
+    return this.request(`/public-space/posts/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async likePost(id: string) {
+    return this.request(`/public-space/posts/${id}/like`, {
+      method: 'POST',
+    });
+  }
+
+  async unlikePost(id: string) {
+    return this.request(`/public-space/posts/${id}/like`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getPostComments(postId: string) {
+    return this.request(`/public-space/posts/${postId}/comments`);
+  }
+
+  async addPostComment(postId: string, content: string) {
+    return this.request(`/public-space/posts/${postId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    });
+  }
+
+  async deletePostComment(postId: string, commentId: string) {
+    return this.request(`/public-space/posts/${postId}/comments/${commentId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async sharePost(postId: string, commentary?: string) {
+    return this.request(`/public-space/posts/${postId}/share`, {
+      method: 'POST',
+      body: JSON.stringify({ commentary }),
+    });
+  }
+
+  async savePost(postId: string) {
+    return this.request(`/public-space/posts/${postId}/save`, {
+      method: 'POST',
+    });
+  }
+
+  async unsavePost(postId: string) {
+    return this.request(`/public-space/posts/${postId}/save`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getSavedPosts() {
+    return this.request('/public-space/saved-posts');
+  }
+
+  async reportPost(postId: string, data: { reason: string; details?: string }) {
+    return this.request(`/public-space/posts/${postId}/report`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async trackPostView(postId: string) {
+    return this.request(`/public-space/posts/${postId}/view`, {
+      method: 'POST',
+    });
+  }
+
+  // Friend System APIs
+  async sendFriendRequest(targetUserId: string) {
+    return this.request('/public-space/friends/request', {
+      method: 'POST',
+      body: JSON.stringify({ targetUserId }),
+    });
+  }
+
+  async respondFriendRequest(requestId: string, action: 'accept' | 'reject') {
+    return this.request(`/public-space/friends/request/${requestId}/respond`, {
+      method: 'POST',
+      body: JSON.stringify({ action }),
+    });
+  }
+
+  async cancelFriendRequest(targetUserId: string) {
+    return this.request(`/public-space/friends/request/${targetUserId}/cancel`, {
+      method: 'DELETE',
+    });
+  }
+
+  async removeFriend(targetUserId: string) {
+    return this.request(`/public-space/friends/${targetUserId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getFriendsList(userId?: string) {
+    const url = userId ? `/public-space/friends?userId=${userId}` : '/public-space/friends';
+    return this.request(url);
+  }
+
+  async getPendingFriendRequests() {
+    return this.request('/public-space/friends/pending');
+  }
+
+  // Follow & Community Profiles
+  async followUser(targetUserId: string) {
+    return this.request(`/public-space/users/${targetUserId}/follow`, {
+      method: 'POST',
+    });
+  }
+
+  async unfollowUser(targetUserId: string) {
+    return this.request(`/public-space/users/${targetUserId}/follow`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCommunityProfile(identifier: string) {
+    return this.request(`/public-space/users/${identifier}/profile`);
+  }
+
+  // Discovery & Notifications
+  async searchCommunityUsers(q: string) {
+    return this.request(`/public-space/users/search?q=${encodeURIComponent(q)}`);
+  }
+
+  async getTrendingHashtags() {
+    return this.request('/public-space/trending-hashtags');
+  }
+
+  async getCommunityNotifications() {
+    return this.request('/public-space/notifications');
+  }
+
+  async markCommunityNotificationRead(notificationId: string) {
+    return this.request(`/public-space/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+    });
+  }
+
+  async markAllCommunityNotificationsRead() {
+    return this.request('/public-space/notifications/read-all', {
+      method: 'PATCH',
     });
   }
 }

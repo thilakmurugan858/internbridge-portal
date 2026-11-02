@@ -133,3 +133,95 @@ Audit log for sensitive actions.
 - `targetId`: `String`
 - `details`: `Mixed`
 - `ipAddress`: `String`
+
+
+---
+
+## 3. Public Space (Community Engagement) Schemas
+
+### 3.1 `Post`
+Community discussions, updates, and multimedia posts.
+- `userId`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `authorName`: `String` (Required)
+- `username`: `String` (Required, Indexed)
+- `authorAvatar`: `String`
+- `friendCountAtPost`: `Number` (Historical record of accepted friends at publication)
+- `content`: `String` (Max 3000 chars, Required)
+- `mediaUrls`: Array of `String` (Max 4 images or 1 video)
+- `mediaType`: `'none' | 'image' | 'video'`
+- `privacy`: `'public' | 'friends' | 'private'` (Default `'public'`, Indexed)
+- `hashtags`: Array of `String` (Indexed)
+- `mentionedUserIds`: Array of `ObjectId` (Ref: `User`)
+- `mentionedUsernames`: Array of `String`
+- `likesCount`: `Number` (Default 0, Indexed)
+- `commentsCount`: `Number` (Default 0)
+- `sharesCount`: `Number` (Default 0)
+- `viewsCount`: `Number` (Default 0)
+- `status`: `'active' | 'flagged' | 'deleted'` (Default `'active'`, Indexed)
+- **Compound Indexes:**
+  - `{ status: 1, privacy: 1, createdAt: -1 }` (Feed retrieval)
+  - `{ status: 1, privacy: 1, likesCount: -1 }` (Trending ranking)
+  - `{ userId: 1, status: 1, createdAt: -1 }` (User profile & daily count)
+  - `{ hashtags: 1, createdAt: -1 }` (Hashtag discovery)
+
+### 3.2 `Friendship`
+Mutual friend relations directly determining daily posting quotas.
+- `requester`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `recipient`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `status`: `'pending' | 'accepted' | 'rejected'` (Default `'pending'`, Indexed)
+- **Unique Compound Index:** `{ requester: 1, recipient: 1 }` (Single relationship lifecycle record)
+- Compound Query: `{ $or: [{ requester: userId }, { recipient: userId }], status: 'accepted' }`
+
+### 3.3 `Follow`
+One-way subscription connection.
+- `follower`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `following`: `ObjectId` (Ref: `User`, Required, Indexed)
+- **Unique Compound Index:** `{ follower: 1, following: 1 }`
+
+### 3.4 `PostLike`
+Individual like tracking.
+- `postId`: `ObjectId` (Ref: `Post`, Required, Indexed)
+- `userId`: `ObjectId` (Ref: `User`, Required, Indexed)
+- **Unique Compound Index:** `{ postId: 1, userId: 1 }` (Prevents duplicate likes)
+
+### 3.5 `PostComment`
+Inline discussion comments.
+- `postId`: `ObjectId` (Ref: `Post`, Required, Indexed)
+- `userId`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `authorName`: `String` (Required)
+- `username`: `String` (Required)
+- `authorAvatar`: `String`
+- `content`: `String` (Max 1000 chars, Required)
+- **Index:** `{ postId: 1, createdAt: 1 }`
+
+### 3.6 `PostShare`
+Attributed shares.
+- `postId`: `ObjectId` (Ref: `Post`, Required, Indexed)
+- `userId`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `commentary`: `String` (Max 500 chars)
+
+### 3.7 `SavedPost`
+Community bookmarks.
+- `postId`: `ObjectId` (Ref: `Post`, Required, Indexed)
+- `userId`: `ObjectId` (Ref: `User`, Required, Indexed)
+- **Unique Compound Index:** `{ postId: 1, userId: 1 }`
+
+### 3.8 `PostReport`
+Community post reports for moderation.
+- `postId`: `ObjectId` (Ref: `Post`, Required, Indexed)
+- `reportedBy`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `reason`: `'spam' | 'harassment' | 'inappropriate' | 'misinformation' | 'other'`
+- `details`: `String` (Max 500 chars)
+- `status`: `'pending' | 'resolved' | 'dismissed'`
+- **Unique Compound Index:** `{ postId: 1, reportedBy: 1 }` (Prevents duplicate reports from same user)
+
+### 3.9 `CommunityNotification`
+In-app activity notifications.
+- `recipient`: `ObjectId` (Ref: `User`, Required, Indexed)
+- `sender`: `ObjectId` (Ref: `User`, Optional)
+- `type`: `'like' | 'comment' | 'share' | 'friend_request' | 'friend_accept' | 'mention'`
+- `postId`: `ObjectId` (Ref: `Post`, Optional)
+- `postContentSnippet`: `String`
+- `relationshipId`: `ObjectId` (Ref: `Friendship`, Optional)
+- `isRead`: `Boolean` (Default `false`, Indexed)
+- **Compound Index:** `{ recipient: 1, isRead: 1, createdAt: -1 }`

@@ -7,6 +7,15 @@ import { Company } from '../models/Company';
 import { Internship } from '../models/Internship';
 import { Job } from '../models/Job';
 import { Application } from '../models/Application';
+import { Post } from '../models/Post';
+import { PostLike } from '../models/PostLike';
+import { PostComment } from '../models/PostComment';
+import { PostShare } from '../models/PostShare';
+import { SavedPost } from '../models/SavedPost';
+import { PostReport } from '../models/PostReport';
+import { Friendship } from '../models/Friendship';
+import { Follow } from '../models/Follow';
+import { CommunityNotification } from '../models/CommunityNotification';
 import { AuthService } from '../services/authService';
 
 export const seedDatabase = async (): Promise<void> => {
@@ -26,6 +35,15 @@ export const seedDatabase = async (): Promise<void> => {
     Internship.deleteMany({}),
     Job.deleteMany({}),
     Application.deleteMany({}),
+    Post.deleteMany({}),
+    PostLike.deleteMany({}),
+    PostComment.deleteMany({}),
+    PostShare.deleteMany({}),
+    SavedPost.deleteMany({}),
+    PostReport.deleteMany({}),
+    Friendship.deleteMany({}),
+    Follow.deleteMany({}),
+    CommunityNotification.deleteMany({}),
   ]);
 
   console.log('[Seed] Cleared existing records.');
@@ -36,28 +54,70 @@ export const seedDatabase = async (): Promise<void> => {
   const studentUser = await User.create({
     name: 'Aarav Sharma (Demo Student)',
     email: 'student@internbridge.dev',
+    username: 'aarav_sharma',
     passwordHash,
     role: 'student',
     isVerified: true,
+    bio: 'Pre-final Year Computer Science Student | Aspiring Full Stack Developer',
+    location: 'Bengaluru, India',
   });
 
   const employerUser = await User.create({
     name: 'Neha Kapoor (Demo Recruiter)',
     email: 'employer@internbridge.dev',
+    username: 'neha_recruiter',
     passwordHash,
     role: 'employer',
     isVerified: true,
+    bio: 'Head of Talent Acquisition @ Apex Digital Labs | Hiring young tech minds',
+    location: 'Bengaluru, India',
   });
 
   const adminUser = await User.create({
     name: 'Platform Moderator (Demo Admin)',
     email: 'admin@internbridge.dev',
+    username: 'platform_moderator',
     passwordHash,
     role: 'admin',
     isVerified: true,
+    bio: 'InternBridge Safety & Trust Operations',
   });
 
-  // Create Student Profile
+  // Additional student community members
+  const peer1 = await User.create({
+    name: 'Rohit Kumar',
+    email: 'rohit@internbridge.dev',
+    username: 'rohit_kumar',
+    passwordHash,
+    role: 'student',
+    isVerified: true,
+    bio: 'Backend enthusiast & Cloud architecture learner | CSE @ IIT Bombay',
+    location: 'Mumbai, India',
+  });
+
+  const peer2 = await User.create({
+    name: 'Priya Singh',
+    email: 'priya@internbridge.dev',
+    username: 'priya_singh',
+    passwordHash,
+    role: 'student',
+    isVerified: true,
+    bio: 'Frontend developer & UI/UX explorer | React & Next.js contributor',
+    location: 'Delhi, India',
+  });
+
+  const peer3 = await User.create({
+    name: 'Vikram Dev',
+    email: 'vikram@internbridge.dev',
+    username: 'vikram_dev',
+    passwordHash,
+    role: 'student',
+    isVerified: false,
+    bio: 'Machine Learning student | Python & Data Analytics',
+    location: 'Hyderabad, India',
+  });
+
+  // Create Student Profile for studentUser
   await StudentProfile.create({
     userId: studentUser._id,
     phone: '+91 9876543210',
@@ -143,7 +203,7 @@ export const seedDatabase = async (): Promise<void> => {
     isVerified: true,
   });
 
-  // Create 8 Demo Internships
+  // Demo Internships
   const oneMonthAhead = new Date();
   oneMonthAhead.setDate(oneMonthAhead.getDate() + 30);
 
@@ -223,213 +283,11 @@ export const seedDatabase = async (): Promise<void> => {
       status: 'active',
       viewsCount: 84,
     },
-    {
-      title: 'Machine Learning & Data Science Intern',
-      employerId: employerUser._id,
-      companyId: companies[3]._id,
-      companyName: companies[3].name,
-      category: 'Data Science & AI',
-      location: 'Remote',
-      workMode: 'remote',
-      durationWeeks: 12,
-      stipend: { amount: 28000, currency: 'INR', type: 'fixed', period: 'month' },
-      openings: 1,
-      description: 'Apply NLP and collaborative filtering algorithms to improve candidate-job recommendation relevancy.',
-      responsibilities: [
-        'Preprocess textual dataset features such as skills, job descriptions, and educational histories.',
-        'Evaluate recommendation ranking metrics including Precision@k, Recall@k, and NDCG.',
-        'Build and document reproducible experiment pipelines.',
-      ],
-      skillsRequired: ['Python', 'Pandas', 'Scikit-Learn', 'PyTorch', 'Data Analysis'],
-      eligibility: ['Strong foundation in probability, statistics, and Python programming'],
-      perks: ['Certificate of Merit', 'Research Mentorship', 'Letter of Recommendation'],
-      deadline: oneMonthAhead,
-      startDate: 'Immediately',
-      status: 'active',
-      viewsCount: 175,
-    },
-    {
-      title: 'Fintech Backend Engineering Intern',
-      employerId: employerUser._id,
-      companyId: companies[2]._id,
-      companyName: companies[2].name,
-      category: 'Software Engineering',
-      location: 'Mumbai',
-      workMode: 'hybrid',
-      durationWeeks: 20,
-      stipend: { amount: 35000, currency: 'INR', type: 'fixed', period: 'month' },
-      openings: 2,
-      description: 'Build fault-tolerant ledger services, transaction verification APIs, and database indexing strategies.',
-      responsibilities: [
-        'Implement transactional database schemas with rigorous ACID and idempotency guarantees.',
-        'Author RESTful documentation and end-to-end integration tests.',
-        'Participate in security reviews and database performance profiling.',
-      ],
-      skillsRequired: ['Node.js', 'Express.js', 'PostgreSQL', 'MongoDB', 'API Security'],
-      eligibility: ['Proficient in backend fundamentals and data modeling'],
-      perks: ['Top Tier Stipend', 'Corporate Hardware Provided', 'Certificate', 'PPO Opportunity'],
-      deadline: oneMonthAhead,
-      startDate: 'Immediate',
-      status: 'active',
-      viewsCount: 210,
-    },
-    {
-      title: 'Product Management & Growth Intern',
-      employerId: employerUser._id,
-      companyId: companies[0]._id,
-      companyName: companies[0].name,
-      category: 'Product & Operations',
-      location: 'Bengaluru',
-      workMode: 'hybrid',
-      durationWeeks: 12,
-      stipend: { amount: 18000, currency: 'INR', type: 'fixed', period: 'month' },
-      openings: 1,
-      description: 'Analyze student onboarding funnels, interview active jobseekers, and formulate product spec documents.',
-      responsibilities: [
-        'Conduct qualitative user research sessions with students and campus placement coordinators.',
-        'Define key performance indicators (KPIs) and monitor drop-off rates across application stages.',
-        'Draft user stories, wireframes, and release acceptance criteria.',
-      ],
-      skillsRequired: ['User Research', 'Product Analytics', 'Wireframing', 'Communication'],
-      eligibility: ['Strong analytical thinking and user-centric problem solving aptitude'],
-      perks: ['Certificate', 'Executive Mentorship', 'Letter of Recommendation'],
-      deadline: oneMonthAhead,
-      startDate: 'Immediately',
-      status: 'active',
-      viewsCount: 65,
-    },
-    {
-      title: 'Mobile App Developer Intern (Flutter / React Native)',
-      employerId: employerUser._id,
-      companyId: companies[1]._id,
-      companyName: companies[1].name,
-      category: 'Mobile Development',
-      location: 'Remote',
-      workMode: 'remote',
-      durationWeeks: 16,
-      stipend: { amount: 22000, currency: 'INR', type: 'fixed', period: 'month' },
-      openings: 2,
-      description: 'Develop cross-platform mobile apps for Android and iOS providing instantaneous internship push alerts.',
-      responsibilities: [
-        'Build smooth mobile navigation, offline cache handling, and push notifications.',
-        'Integrate biometric authentication and deep link routing.',
-      ],
-      skillsRequired: ['Flutter', 'Dart', 'React Native', 'Mobile UI Design'],
-      eligibility: ['Prior experience publishing or building at least one mobile application'],
-      perks: ['Certificate', 'Flexible Work Schedule', 'Pre-Placement Review'],
-      deadline: oneMonthAhead,
-      startDate: 'Immediately',
-      status: 'active',
-      viewsCount: 112,
-    },
-    {
-      title: 'Cybersecurity & Application Security Intern',
-      employerId: employerUser._id,
-      companyId: companies[2]._id,
-      companyName: companies[2].name,
-      category: 'Security & QA',
-      location: 'Mumbai',
-      workMode: 'in_office',
-      durationWeeks: 12,
-      stipend: { amount: 24000, currency: 'INR', type: 'fixed', period: 'month' },
-      openings: 1,
-      description: 'Perform static application security testing (SAST), vulnerability assessments, and OWASP compliance audits.',
-      responsibilities: [
-        'Audit authentication headers, CORS origins, and token expiration lifecycles.',
-        'Conduct automated vulnerability scans and write remediation guides for engineering teams.',
-      ],
-      skillsRequired: ['OWASP Top 10', 'Penetration Testing', 'Network Security', 'Linux'],
-      eligibility: ['Computer Science or Information Security academic background'],
-      perks: ['Certificate', 'Security Certification Sponsorship', 'Letter of Recommendation'],
-      deadline: oneMonthAhead,
-      startDate: 'Immediately',
-      status: 'active',
-      viewsCount: 89,
-    },
   ];
 
   const createdInternships = await Internship.create(internshipsData);
 
-  // Create 3 Demo Jobs
-  const jobsData = [
-    {
-      title: 'Junior Full Stack Engineer',
-      employerId: employerUser._id,
-      companyId: companies[0]._id,
-      companyName: companies[0].name,
-      category: 'Software Engineering',
-      location: 'Bengaluru',
-      workMode: 'hybrid',
-      jobType: 'full_time',
-      experienceYearsMin: 0,
-      salary: { min: 600000, max: 900000, currency: 'INR', period: 'year' },
-      openings: 4,
-      description: 'Entry-level full stack position for recent graduates who possess strong algorithmic fundamentals and web programming experience.',
-      responsibilities: [
-        'Ship customer-facing features on Next.js web portal.',
-        'Build performant REST and GraphQL APIs.',
-        'Maintain high code quality and test coverage.',
-      ],
-      skillsRequired: ['TypeScript', 'Next.js', 'Node.js', 'PostgreSQL', 'Docker'],
-      eligibility: ['B.Tech / MCA / M.Tech in Computer Science or related degree', '0-1 year experience'],
-      perks: ['Health Insurance', 'Performance Bonus', 'Stock Options (ESOPs)', 'Annual Learning Stipend'],
-      deadline: oneMonthAhead,
-      status: 'active',
-      viewsCount: 310,
-    },
-    {
-      title: 'Associate Cloud Support Engineer',
-      employerId: employerUser._id,
-      companyId: companies[1]._id,
-      companyName: companies[1].name,
-      category: 'DevOps & Cloud',
-      location: 'Hyderabad',
-      workMode: 'remote',
-      jobType: 'full_time',
-      experienceYearsMin: 0,
-      salary: { min: 550000, max: 800000, currency: 'INR', period: 'year' },
-      openings: 2,
-      description: 'Troubleshoot infrastructure anomalies, monitor cloud workloads, and assist enterprise customers with cloud onboarding.',
-      responsibilities: [
-        'Analyze system telemetry and incident logs.',
-        'Write automation scripts to remediate repetitive operational tasks.',
-      ],
-      skillsRequired: ['AWS / GCP Basics', 'Linux Bash Scripting', 'Python', 'Networking'],
-      eligibility: ['Graduating batches of 2024 and 2025'],
-      perks: ['Home Office Setup Allowance', 'Comprehensive Health Cover', 'Flexible Working'],
-      deadline: oneMonthAhead,
-      status: 'active',
-      viewsCount: 145,
-    },
-    {
-      title: 'Junior Data Analyst',
-      employerId: employerUser._id,
-      companyId: companies[3]._id,
-      companyName: companies[3].name,
-      category: 'Data Science & AI',
-      location: 'Pune',
-      workMode: 'hybrid',
-      jobType: 'full_time',
-      experienceYearsMin: 0,
-      salary: { min: 500000, max: 750000, currency: 'INR', period: 'year' },
-      openings: 2,
-      description: 'Transform raw product event streams into executive dashboards, cohorts, and predictive business insights.',
-      responsibilities: [
-        'Write complex SQL queries, window functions, and aggregation transformations.',
-        'Build automated reporting dashboards in Tableau or PowerBI.',
-      ],
-      skillsRequired: ['SQL', 'Python', 'Excel', 'Tableau', 'Data Visualization'],
-      eligibility: ['Degree in Statistics, Mathematics, Computer Science, or Economics'],
-      perks: ['Hybrid Working', 'Competitive Compensation', 'Gym Membership Reimbursement'],
-      deadline: oneMonthAhead,
-      status: 'active',
-      viewsCount: 180,
-    },
-  ];
-
-  await Job.create(jobsData);
-
-  // Create 1 Demo Application for the demo student
+  // Demo Application
   await Application.create({
     opportunityId: createdInternships[0]._id,
     opportunityType: 'internship',
@@ -455,12 +313,185 @@ export const seedDatabase = async (): Promise<void> => {
     ],
   });
 
+  // ==========================================
+  // PUBLIC SPACE DEMO SEEDING
+  // ==========================================
+  console.log('[Seed] Seeding Public Space relationships, posts, and interactions...');
+
+  // Friendships:
+  // aarav_sharma has 2 accepted friends (rohit_kumar, priya_singh) => Daily Limit = 2 posts
+  // vikram_dev has sent a pending request to aarav_sharma
+  await Friendship.create([
+    {
+      requester: studentUser._id,
+      recipient: peer1._id,
+      status: 'accepted',
+    },
+    {
+      requester: peer2._id,
+      recipient: studentUser._id,
+      status: 'accepted',
+    },
+    {
+      requester: peer3._id,
+      recipient: studentUser._id,
+      status: 'pending',
+    },
+  ]);
+
+  // Follows:
+  await Follow.create([
+    { follower: peer1._id, following: studentUser._id },
+    { follower: studentUser._id, following: peer2._id },
+    { follower: peer3._id, following: studentUser._id },
+  ]);
+
+  // Public Space Posts:
+  const post1 = await Post.create({
+    userId: peer1._id,
+    authorName: peer1.name,
+    username: peer1.username,
+    authorAvatar: '',
+    friendCountAtPost: 1,
+    content: 'Thrilled to share that I just accepted an offer for a Backend Engineering Intern position! Huge thanks to @aarav_sharma for reviewing my mock system design and resume. #internship #career #backend #software',
+    mediaUrls: ['https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80'],
+    mediaType: 'image',
+    privacy: 'public',
+    likesCount: 14,
+    commentsCount: 3,
+    sharesCount: 2,
+    viewsCount: 145,
+    hashtags: ['internship', 'career', 'backend', 'software'],
+    mentionedUserIds: [studentUser._id],
+    mentionedUsernames: ['aarav_sharma'],
+    status: 'active',
+  });
+
+  const post2 = await Post.create({
+    userId: peer2._id,
+    authorName: peer2.name,
+    username: peer2.username,
+    authorAvatar: '',
+    friendCountAtPost: 1,
+    content: 'Building an accessible design system with React 18, Tailwind CSS, and Radix primitives this week. What are your favorite UI libraries for student hackathons? #frontend #react #webdev #uiux',
+    mediaUrls: [],
+    mediaType: 'text',
+    privacy: 'public',
+    likesCount: 8,
+    commentsCount: 2,
+    sharesCount: 1,
+    viewsCount: 89,
+    hashtags: ['frontend', 'react', 'webdev', 'uiux'],
+    mentionedUserIds: [],
+    mentionedUsernames: [],
+    status: 'active',
+  });
+
+  const post3 = await Post.create({
+    userId: employerUser._id,
+    authorName: employerUser.name,
+    username: employerUser.username,
+    authorAvatar: '',
+    friendCountAtPost: 0,
+    content: 'Recruiter Tip: When applying to our technical internships, highlight actual project outcomes rather than long lists of keywords. A clean GitHub repository speaks volumes! #hiring #interview #tips',
+    mediaUrls: [],
+    mediaType: 'text',
+    privacy: 'public',
+    likesCount: 29,
+    commentsCount: 5,
+    sharesCount: 8,
+    viewsCount: 310,
+    hashtags: ['hiring', 'interview', 'tips'],
+    mentionedUserIds: [],
+    mentionedUsernames: [],
+    status: 'active',
+  });
+
+  // Initial Post by Student Aarav (Friend count = 2 at posting time, used 1 post today)
+  const studentPost = await Post.create({
+    userId: studentUser._id,
+    authorName: studentUser.name,
+    username: studentUser.username,
+    authorAvatar: '',
+    friendCountAtPost: 2,
+    content: 'Deep diving into MongoDB compound index performance and query execution plans today. Any recommendations on books for scalable database architecture? #mongodb #database #backend',
+    mediaUrls: [],
+    mediaType: 'text',
+    privacy: 'public',
+    likesCount: 6,
+    commentsCount: 1,
+    sharesCount: 0,
+    viewsCount: 62,
+    hashtags: ['mongodb', 'database', 'backend'],
+    mentionedUserIds: [],
+    mentionedUsernames: [],
+    status: 'active',
+  });
+
+  // Sample Comments
+  await PostComment.create([
+    {
+      postId: post1._id,
+      userId: studentUser._id,
+      authorName: studentUser.name,
+      username: studentUser.username,
+      content: 'Congratulations Rohit! Super well deserved, you put in the hard work!',
+    },
+    {
+      postId: post1._id,
+      userId: peer2._id,
+      authorName: peer2.name,
+      username: peer2.username,
+      content: 'Congrats Rohit! Let us celebrate soon! 🎉',
+    },
+    {
+      postId: studentPost._id,
+      userId: peer1._id,
+      authorName: peer1.name,
+      username: peer1.username,
+      content: 'Check out "Designing Data-Intensive Applications" by Martin Kleppmann! Absolute gold standard.',
+    },
+  ]);
+
+  // Sample Likes
+  await PostLike.create([
+    { postId: post1._id, userId: studentUser._id },
+    { postId: post2._id, userId: studentUser._id },
+    { postId: studentPost._id, userId: peer1._id },
+  ]);
+
+  // Sample Notifications for studentUser
+  await CommunityNotification.create([
+    {
+      recipient: studentUser._id,
+      sender: peer1._id,
+      type: 'mention',
+      postId: post1._id,
+      postContentSnippet: post1.content.slice(0, 80),
+      read: false,
+    },
+    {
+      recipient: studentUser._id,
+      sender: peer1._id,
+      type: 'comment',
+      postId: studentPost._id,
+      postContentSnippet: 'Check out "Designing Data-Intensive Applications"...',
+      read: false,
+    },
+    {
+      recipient: studentUser._id,
+      sender: peer3._id,
+      type: 'friend_request',
+      read: false,
+    },
+  ]);
+
   console.log('[Seed] Database seeded successfully!');
   console.log('====================================================');
   console.log('Demo Credentials for Testing:');
-  console.log('Student Account:   student@internbridge.dev   / DemoPassword123!');
-  console.log('Employer Account:  employer@internbridge.dev  / DemoPassword123!');
-  console.log('Admin Account:     admin@internbridge.dev     / DemoPassword123!');
+  console.log('Student Account:   student@internbridge.dev   / DemoPassword123! (@aarav_sharma)');
+  console.log('Employer Account:  employer@internbridge.dev  / DemoPassword123! (@neha_recruiter)');
+  console.log('Admin Account:     admin@internbridge.dev     / DemoPassword123! (@platform_moderator)');
   console.log('====================================================');
 };
 

@@ -16,7 +16,11 @@ import {
   ShieldAlert,
   LogOut,
   ChevronDown,
+  MessageSquare,
+  Users,
+  Compass,
 } from 'lucide-react';
+import { NotificationBell } from './public-space/NotificationBell';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -77,10 +81,24 @@ export const Navbar: React.FC = () => {
             >
               Top Companies
             </Link>
+            <Link
+              href="/public-space"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                pathname?.startsWith('/public-space')
+                  ? 'bg-primary-50 text-primary-700 font-semibold'
+                  : 'text-slate-600 hover:text-navy-900 hover:bg-slate-50'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4 text-primary-600" />
+              <span>Public Space</span>
+              <span className="px-1.5 py-0.5 text-[9px] uppercase font-bold tracking-wider bg-primary-100 text-primary-700 rounded-full">
+                Feed
+              </span>
+            </Link>
           </nav>
 
           {/* User / Auth CTAs */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2.5">
             {!user ? (
               <>
                 <Link
@@ -103,102 +121,139 @@ export const Navbar: React.FC = () => {
                 </Link>
               </>
             ) : (
-              <div className="relative">
-                <button
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition"
-                >
-                  <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
-                    {user.name.charAt(0)}
-                  </div>
-                  <div className="text-left text-xs">
-                    <p className="font-semibold text-navy-900 max-w-[120px] truncate">{user.name}</p>
-                    <p className="text-slate-500 capitalize">{user.role}</p>
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
-                </button>
+              <div className="flex items-center gap-2">
+                {/* Notification Bell */}
+                <NotificationBell />
 
-                {userDropdownOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100"
-                    onClick={() => setUserDropdownOpen(false)}
+                {/* User Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition"
                   >
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <p className="text-xs text-slate-400">Signed in as</p>
-                      <p className="text-sm font-semibold text-navy-900 truncate">{user.email}</p>
+                    <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
+                      {user.name.charAt(0)}
                     </div>
+                    <div className="text-left text-xs">
+                      <p className="font-semibold text-navy-900 max-w-[120px] truncate">{user.name}</p>
+                      <p className="text-slate-500 capitalize">{user.role}</p>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
 
-                    {user.role === 'student' && (
-                      <>
-                        <Link
-                          href="/student"
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                        >
-                          <Briefcase className="w-4 h-4 text-slate-500" />
-                          My Applications
-                        </Link>
-                        <Link
-                          href="/student/saved"
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                        >
-                          <Bookmark className="w-4 h-4 text-slate-500" />
-                          Saved Opportunities
-                        </Link>
-                        <Link
-                          href="/student/profile"
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                        >
-                          <UserIcon className="w-4 h-4 text-slate-500" />
-                          Edit Profile & Resume
-                        </Link>
-                      </>
-                    )}
-
-                    {user.role === 'employer' && (
-                      <>
-                        <Link
-                          href="/employer"
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                        >
-                          <Briefcase className="w-4 h-4 text-slate-500" />
-                          Employer Dashboard
-                        </Link>
-                        <Link
-                          href="/employer/create"
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-primary-600 font-medium hover:bg-primary-50"
-                        >
-                          <PlusCircle className="w-4 h-4 text-primary-600" />
-                          Publish Internship / Job
-                        </Link>
-                      </>
-                    )}
-
-                    {user.role === 'admin' && (
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50"
-                      >
-                        <ShieldAlert className="w-4 h-4 text-purple-600" />
-                        Admin Moderation
-                      </Link>
-                    )}
-
-                    <div className="border-t border-slate-100 my-1"></div>
-                    <button
-                      onClick={logout}
-                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                  {userDropdownOpen && (
+                    <div
+                      className="absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100"
+                      onClick={() => setUserDropdownOpen(false)}
                     >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </div>
-                )}
+                      <div className="px-4 py-2 border-b border-slate-100">
+                        <p className="text-xs text-slate-400">Signed in as</p>
+                        <p className="text-sm font-semibold text-navy-900 truncate">{user.email}</p>
+                        {user.username && (
+                          <p className="text-xs text-primary-600 font-medium">@{user.username}</p>
+                        )}
+                      </div>
+
+                      {/* Public Space Shortcuts */}
+                      <div className="py-1">
+                        <Link
+                          href={`/public-space/profile/${user.username || user.id}`}
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                        >
+                          <UserIcon className="w-4 h-4 text-primary-600" />
+                          My Public Space Profile
+                        </Link>
+                        <Link
+                          href="/public-space/saved"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                        >
+                          <Bookmark className="w-4 h-4 text-amber-500" />
+                          Saved Community Posts
+                        </Link>
+                        <Link
+                          href="/public-space/discovery"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                        >
+                          <Compass className="w-4 h-4 text-indigo-500" />
+                          Discover Peers & Friends
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-slate-100 my-1"></div>
+
+                      {user.role === 'student' && (
+                        <>
+                          <Link
+                            href="/student"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                          >
+                            <Briefcase className="w-4 h-4 text-slate-500" />
+                            My Applications
+                          </Link>
+                          <Link
+                            href="/student/saved"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                          >
+                            <Bookmark className="w-4 h-4 text-slate-500" />
+                            Saved Opportunities
+                          </Link>
+                          <Link
+                            href="/student/profile"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                          >
+                            <UserIcon className="w-4 h-4 text-slate-500" />
+                            Edit Resume & Info
+                          </Link>
+                        </>
+                      )}
+
+                      {user.role === 'employer' && (
+                        <>
+                          <Link
+                            href="/employer"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                          >
+                            <Briefcase className="w-4 h-4 text-slate-500" />
+                            Employer Dashboard
+                          </Link>
+                          <Link
+                            href="/employer/create"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-primary-600 font-medium hover:bg-primary-50"
+                          >
+                            <PlusCircle className="w-4 h-4 text-primary-600" />
+                            Publish Opportunity
+                          </Link>
+                        </>
+                      )}
+
+                      {user.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50"
+                        >
+                          <ShieldAlert className="w-4 h-4 text-purple-600" />
+                          Admin Moderation
+                        </Link>
+                      )}
+
+                      <div className="border-t border-slate-100 my-1"></div>
+                      <button
+                        onClick={logout}
+                        className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
 
           {/* Mobile hamburger button */}
-          <div className="flex md:hidden items-center">
+          <div className="flex md:hidden items-center gap-1">
+            {user && <NotificationBell />}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg text-slate-600 hover:text-navy-900 hover:bg-slate-100"
@@ -234,6 +289,16 @@ export const Navbar: React.FC = () => {
           >
             Companies
           </Link>
+          <Link
+            href="/public-space"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between px-3 py-2 rounded-md font-medium text-primary-700 bg-primary-50"
+          >
+            <span className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> Public Space
+            </span>
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-primary-200">Feed</span>
+          </Link>
 
           <div className="border-t border-slate-200 pt-3">
             {!user ? (
@@ -256,40 +321,34 @@ export const Navbar: React.FC = () => {
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-slate-400 px-3">Signed in as {user.name} ({user.role})</p>
+                <Link
+                  href={`/public-space/profile/${user.username || user.id}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  My Public Space Profile
+                </Link>
+                <Link
+                  href="/public-space/saved"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  Saved Community Posts
+                </Link>
+                <Link
+                  href="/public-space/discovery"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  Discover Peers & Friends
+                </Link>
                 {user.role === 'student' && (
-                  <>
-                    <Link
-                      href="/student"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
-                    >
-                      My Applications
-                    </Link>
-                    <Link
-                      href="/student/profile"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
-                    >
-                      Profile & Resume
-                    </Link>
-                  </>
-                )}
-                {user.role === 'employer' && (
                   <Link
-                    href="/employer"
+                    href="/student"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
                   >
-                    Employer Dashboard
-                  </Link>
-                )}
-                {user.role === 'admin' && (
-                  <Link
-                    href="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-purple-700 hover:bg-slate-100"
-                  >
-                    Admin Moderation
+                    My Applications
                   </Link>
                 )}
                 <button

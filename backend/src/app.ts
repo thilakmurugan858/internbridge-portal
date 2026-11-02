@@ -17,6 +17,7 @@ import studentRoutes from './routes/studentRoutes';
 import savedOpportunityRoutes from './routes/savedOpportunityRoutes';
 import reportRoutes from './routes/reportRoutes';
 import adminRoutes from './routes/adminRoutes';
+import publicSpaceRoutes from './routes/publicSpaceRoutes';
 
 export const createApp = () => {
   const app = express();
@@ -67,6 +68,7 @@ export const createApp = () => {
   app.use('/api/saved-opportunities', savedOpportunityRoutes);
   app.use('/api/reports', reportRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/public-space', publicSpaceRoutes);
 
   // 404 Route Handler
   app.use('*', (req: Request, res: Response) => {

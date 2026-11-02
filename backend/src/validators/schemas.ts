@@ -128,3 +128,32 @@ export const studentProfileUpdateSchema = z.object({
   githubUrl: z.string().optional(),
   linkedinUrl: z.string().optional(),
 });
+
+
+// Public Space Schemas
+export const createPostSchema = z.object({
+  content: z.string().min(1, 'Post content cannot be empty').max(3000, 'Post content cannot exceed 3000 characters'),
+  mediaUrls: z.array(z.string().url('Invalid media URL')).optional().default([]),
+  mediaType: z.enum(['text', 'image', 'video']).default('text'),
+  privacy: z.enum(['public', 'friends', 'private']).default('public'),
+});
+
+export const updatePostSchema = z.object({
+  content: z.string().min(1, 'Post content cannot be empty').max(3000, 'Post content cannot exceed 3000 characters').optional(),
+  privacy: z.enum(['public', 'friends', 'private']).optional(),
+  mediaUrls: z.array(z.string().url('Invalid media URL')).optional(),
+  mediaType: z.enum(['text', 'image', 'video']).optional(),
+});
+
+export const addCommentSchema = z.object({
+  content: z.string().min(1, 'Comment cannot be empty').max(1000, 'Comment cannot exceed 1000 characters'),
+});
+
+export const sharePostSchema = z.object({
+  caption: z.string().max(500, 'Caption cannot exceed 500 characters').optional(),
+});
+
+export const postReportSchema = z.object({
+  reason: z.enum(['inappropriate', 'spam', 'harassment', 'hate_speech', 'false_info', 'other']),
+  details: z.string().max(1000).optional(),
+});

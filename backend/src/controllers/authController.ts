@@ -7,9 +7,27 @@ import { AuthService } from '../services/authService';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 import { AuthRequest } from '../types';
 
+export const generateUniqueUsername = async (candidate: string): Promise<string> => {
+  let base = candidate
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '')
+    .slice(0, 20);
+  if (!base || base.length < 2) {
+    base = `user_${Date.now().toString().slice(-4)}`;
+  }
+
+  let username = base;
+  let counter = 1;
+  while (await User.findOne({ username })) {
+    username = `${base}${counter}`;
+    counter++;
+  }
+  return username;
+};
+
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password, role, companyName, designation } = req.body;
+    const { name, email, password, role, companyName, designation, username: requestedUsername } = req.body;
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
@@ -17,11 +35,24 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    let finalUsername = requestedUsername ? requestedUsername.toLowerCase().trim() : '';
+    if (finalUsername) {
+      const usernameTaken = await User.findOne({ username: finalUsername });
+      if (usernameTaken) {
+        sendError(res, 'This username is already taken. Please choose another.', 400);
+        return;
+      }
+    } else {
+      const emailPrefix = email.split('@')[0];
+      finalUsername = await generateUniqueUsername(emailPrefix);
+    }
+
     const passwordHash = await AuthService.hashPassword(password);
 
     const user = await User.create({
       name,
       email: email.toLowerCase(),
+      username: finalUsername,
       passwordHash,
       role,
       isVerified: false,
@@ -67,6 +98,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       userId: user._id.toString(),
       email: user.email,
       role: user.role,
+      username: user.username,
     });
 
     // Set secure HttpOnly cookie
@@ -84,8 +116,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
           id: user._id,
           name: user.name,
           email: user.email,
+          username: user.username,
           role: user.role,
           isVerified: user.isVerified,
+          avatarUrl: user.avatarUrl,
         },
         token,
       },
@@ -113,10 +147,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Ensure user has a username if created previously without one
+    if (!user.username) {
+      user.username = await generateUniqueUsername(user.email.split('@')[0]);
+      await user.save();
+    }
+
     const token = AuthService.generateToken({
       userId: user._id.toString(),
       email: user.email,
       role: user.role,
+      username: user.username,
     });
 
     res.cookie('token', token, {
@@ -131,8 +172,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         id: user._id,
         name: user.name,
         email: user.email,
+        username: user.username,
         role: user.role,
         isVerified: user.isVerified,
+        avatarUrl: user.avatarUrl,
       },
       token,
     }, 'Login successful');
@@ -163,6 +206,12 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       return;
     }
 
+    // Ensure username is present
+    if (!user.username) {
+      user.username = await generateUniqueUsername(user.email.split('@')[0]);
+      await user.save();
+    }
+
     let profileData = null;
     if (user.role === 'student') {
       profileData = await StudentProfile.findOne({ userId: user._id });
@@ -175,8 +224,12 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
         id: user._id,
         name: user.name,
         email: user.email,
+        username: user.username,
         role: user.role,
         isVerified: user.isVerified,
+        avatarUrl: user.avatarUrl,
+        bio: user.bio,
+        location: user.location,
       },
       profile: profileData,
     });

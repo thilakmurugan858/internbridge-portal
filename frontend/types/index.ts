@@ -4,9 +4,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  username?: string;
   role: UserRole;
   isVerified: boolean;
   avatarUrl?: string;
+  bio?: string;
+  location?: string;
 }
 
 export interface Company {
@@ -111,4 +114,109 @@ export interface Application {
   createdAt: string;
   opportunity?: Partial<Internship & Job>;
   studentProfile?: any;
+}
+
+// -------------------------------------------------------------
+// PUBLIC SPACE (COMMUNITY ENGAGEMENT) TYPES
+// -------------------------------------------------------------
+export type PostPrivacy = 'public' | 'friends' | 'private';
+export type MediaType = 'none' | 'image' | 'video';
+
+export interface Post {
+  _id: string;
+  userId: string | { _id: string; name: string; username: string; avatarUrl?: string };
+  authorName: string;
+  username: string;
+  authorAvatar?: string;
+  friendCountAtPost: number;
+  content: string;
+  mediaUrls: string[];
+  mediaType: MediaType;
+  privacy: PostPrivacy;
+  hashtags: string[];
+  mentionedUserIds: string[];
+  mentionedUsernames: string[];
+  likesCount: number;
+  commentsCount: number;
+  sharesCount: number;
+  viewsCount: number;
+  status: 'active' | 'flagged' | 'deleted';
+  createdAt: string;
+  updatedAt: string;
+  isLiked?: boolean;
+  isSaved?: boolean;
+  isAuthor?: boolean;
+}
+
+export interface PostComment {
+  _id: string;
+  postId: string;
+  userId: string;
+  authorName: string;
+  username: string;
+  authorAvatar?: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PostingAllowance {
+  acceptedFriends: number;
+  dailyLimit: number;
+  usedToday: number;
+  remaining: number;
+  allowed: boolean;
+  isUnlimited: boolean;
+  message?: string;
+}
+
+export interface Friendship {
+  _id: string;
+  requester: { _id: string; name: string; username: string; avatarUrl?: string } | string;
+  recipient: { _id: string; name: string; username: string; avatarUrl?: string } | string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CommunityNotification {
+  _id: string;
+  recipient: string;
+  sender?: { _id: string; name: string; username: string; avatarUrl?: string };
+  type: 'like' | 'comment' | 'share' | 'friend_request' | 'friend_accept' | 'mention';
+  postId?: string;
+  postContentSnippet?: string;
+  relationshipId?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface CommunityProfile {
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    avatarUrl?: string;
+    bio?: string;
+    location?: string;
+    role: UserRole;
+    isVerified: boolean;
+    createdAt: string;
+  };
+  stats: {
+    acceptedFriendCount: number;
+    followersCount: number;
+    followingCount: number;
+    postsCount: number;
+  };
+  relationship: {
+    isSelf: boolean;
+    friendshipStatus: 'none' | 'pending_sent' | 'pending_received' | 'accepted' | 'rejected';
+    isFollowing: boolean;
+  };
+}
+
+export interface TrendingHashtag {
+  tag: string;
+  count: number;
 }

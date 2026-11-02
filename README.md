@@ -5,19 +5,39 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14.2+-black.svg)](https://nextjs.org/)
 [![Express.js](https://img.shields.io/badge/Express-4.21+-lightgrey.svg)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-green.svg)](https://mongoosejs.com/)
-[![Tests](https://img.shields.io/badge/Tests-19%20Passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-34%20Passed-brightgreen.svg)]()
 
-InternBridge is a complete, full-stack recruitment and internship discovery platform inspired by the core capabilities of Internshala. Built from scratch with independent branding, clean modern architecture, and enterprise-grade security.
+InternBridge is a complete, full-stack recruitment, internship discovery, and community engagement platform inspired by the core capabilities of Internshala. Built from scratch with independent branding, clean modern architecture, and enterprise-grade security.
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Modules & Capabilities
+
+### 🌐 Task 1: Public Space (Community Engagement)
+- **Personalized Community Feed (`/public-space`):**
+  - **For You:** Multi-tiered feed displaying accepted friends' posts first, trending high-engagement posts next, and recent chronological posts.
+  - **Friends Only:** Exclusively posts authored by accepted mutual friends.
+  - **Trending:** Posts ranked by engagement score (`likes * 2 + comments * 3 + shares * 4`).
+  - **Recent:** Chronological stream of community posts.
+- **Friend-Based Daily Posting Limit (Business Rule):**
+  - **0 Friends:** 0 posts/day (Posting locked with in-app guidance to add peers).
+  - **1 Friend:** 1 post/day.
+  - **2–5 Friends:** 2 posts/day.
+  - **6–10 Friends:** 5 posts/day.
+  - **>10 Friends:** Unlimited posts.
+  - *Evaluated strictly server-side in Indian Standard Time (IST, UTC+05:30) with automatic midnight resets.*
+- **Rich Post Creation:** Text content, `#hashtags`, `@mentions`, multi-photo and video attachments, and privacy settings (`public`, `friends`, `private`).
+- **Interactions:** Likes, comments, attributed shares with commentary, bookmarks/saves, and reports.
+- **Separate Friend & Follow Systems:** Mutual friend requests (directly governing post allowance) decoupled from one-way follower subscriptions.
+- **User Community Profiles (`/public-space/profile/[username]`):** Cover banner, avatar, metrics (friends, followers, posts), and interactive relationship actions.
+- **In-App Notification Center (`/public-space/notifications`):** Real-time bell badge, notifications for likes, comments, friend requests, acceptances, and mentions.
+- **Discovery Hub (`/public-space/discovery`):** Peer directory search, incoming friend request manager, and trending hashtag pills.
 
 ### 🎓 For Students & Candidates
 - **Search & Discovery:** Filter by category, city, work mode (Remote / Hybrid / In-Office), paid/unpaid, stipend range, and duration.
 - **Detailed Opportunity View:** Responsibilities, required skills, eligibility, perks, openings, and application deadlines.
 - **1-Click Apply Flow:** Submit customized cover letters and attach resume/portfolio links.
-- **Duplicate Prevention:** Engine-level compound constraints preventing accidental duplicate applications to the same listing.
+- **Duplicate Prevention:** Engine-level compound constraints preventing duplicate applications to the same opportunity.
 - **Application Tracking:** Track application review status (`applied` &rarr; `in_review` &rarr; `shortlisted` &rarr; `accepted` / `rejected`).
 - **Application Withdrawal:** Candidate agency to withdraw active applications.
 - **Bookmarks:** Save opportunities to personal bookmarks for later review.
@@ -63,7 +83,7 @@ InternBridge is a complete, full-stack recruitment and internship discovery plat
 npm run install:all
 ```
 
-### 3. Seed Demo Data
+### 3. Seed Demo Data (Includes Community Posts & Demo Friendships)
 ```bash
 npm run seed
 ```
@@ -79,17 +99,17 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-Visit **`http://localhost:3000`** in your browser.
+Visit **`http://localhost:3000`** in your browser. Access Public Space via the top navigation or directly at **`http://localhost:3000/public-space`**.
 
 ---
 
 ## 🔑 Pre-Seeded Demo Credentials
 
-| Role | Email Address | Password |
-| :--- | :--- | :--- |
-| **Student** | `student@internbridge.dev` | `DemoPassword123!` |
-| **Employer** | `employer@internbridge.dev` | `DemoPassword123!` |
-| **Admin** | `admin@internbridge.dev` | `DemoPassword123!` |
+| Role | Email Address | Password | Community Username |
+| :--- | :--- | :--- | :--- |
+| **Student** | `student@internbridge.dev` | `DemoPassword123!` | `@aarav_sharma` (2 friends, 2 posts/day allowance) |
+| **Employer** | `employer@internbridge.dev` | `DemoPassword123!` | `@priya_patel` |
+| **Admin** | `admin@internbridge.dev` | `DemoPassword123!` | `@admin` |
 
 *(You can also use the 1-Click Demo Login buttons on the `/login` page)*
 
@@ -97,17 +117,19 @@ Visit **`http://localhost:3000`** in your browser.
 
 ## 🧪 Automated Testing
 
-InternBridge features an automated test suite executed with `ts-jest` and `mongodb-memory-server`:
+InternBridge features comprehensive automated test suites executed with `ts-jest` and `mongodb-memory-server`:
 ```bash
 npm run test:backend
 ```
-**Test Results:** 19 of 19 tests passed (Health endpoint, authentication, authorization, listing retrieval, search filters, duplicate application prevention, employer ownership restrictions, status transitions, and moderation).
+**Test Results:** **34 of 34 tests passing (100%)**
+- **Public Space Suite (15 tests):** Friend limit enforcement (0 friends blocked, 1 friend allowed 1 post, tier calculation, IST limits), friend request lifecycle, follow/unfollow, post interactions (like, comment, share, save, report), and community feed prioritization.
+- **Core Platform Suite (19 tests):** Health check, registration, JWT authentication, listings and keyword search, employer ownership permissions, application lifecycle and duplicate prevention, admin moderation.
 
 ---
 
 ## 📚 Technical Documentation Roadmap
 
-Complete technical architecture and research documentation is available in the `docs/` folder:
+- [docs/public-space.md](docs/public-space.md) — Public Space architecture, friend limit algorithm, feed ranking, and API specification.
 - [docs/architecture.md](docs/architecture.md) — System design, components, and Mermaid sequence diagrams.
 - [docs/database-schema.md](docs/database-schema.md) — Schemas, indexes, relationships, and data dictionary.
 - [docs/api-documentation.md](docs/api-documentation.md) — Full REST endpoint specifications and payload examples.
